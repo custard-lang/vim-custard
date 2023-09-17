@@ -15,6 +15,7 @@ syn keyword custardSyntax if else when scope fn procedure
 syn keyword custardSyntax return
 syn keyword custardSyntax while for forEach recursive
 syn keyword custardSyntax break continue
+syn keyword custardException try catch finally throw
 
 syn keyword custardFunction incrementF decrementF
 syn keyword custardFunction array text Map
@@ -33,6 +34,7 @@ syn keyword custardCommentTodo TODO FIXME
 
 hi def link custardSyntax Statement
 hi def link custardFunction Function
+hi def link custardException Exception
 
 hi def link custardString String
 hi def link custardSpecialCharacter custardSpecial
