@@ -10,7 +10,7 @@ let b:did_indent = 1
 setlocal lispwords=
 setlocal lispwords+=if,else,when,scope,fn,procedure
 setlocal lispwords+=while,for,forEach,recursive
-setlocal lispwords+=array,Map
+setlocal lispwords+=Map
 
 setlocal lisp autoindent nosmartindent
 
