@@ -29,9 +29,6 @@ syn match custardNumber "-\?\<[0-9]\+\(\.[0-9]\+\)\?\>"
 
 syn match custardSpecial "\."
 
-"syn match custardComment /;.*$/ contains=custardCommentTodo
-syn keyword custardCommentTodo TODO FIXME
-
 hi def link custardSyntax Statement
 hi def link custardFunction Function
 hi def link custardException Exception
@@ -44,8 +41,6 @@ hi def link custardNull Keyword
 
 hi def link custardNumber Number
 
-"hi def link custardComment Comment
-hi def link custardCommentTodo Todo
 hi def link custardError Error
 
 let b:current_syntax = "custard"
