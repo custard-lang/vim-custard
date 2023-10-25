@@ -21,7 +21,7 @@ syn keyword custardFunction incrementF decrementF
 syn keyword custardFunction array text Map
 
 syn keyword custardBoolean true false
-syn keyword custardNull undefined
+syn keyword custardNull none
 
 syn region custardString start=/\%(\\\)\@<!"/ skip=/\\[\\"]/ end=/"/ contains=custardSpecialCharacter
 syn match custardSpecialCharacter "\\\d\d\d\|\\."
