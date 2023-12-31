@@ -18,7 +18,7 @@ syn keyword custardSyntax break continue yield
 syn keyword custardException try catch finally throw
 
 syn keyword custardFunction incrementF decrementF
-syn keyword custardFunction array text Map
+syn keyword custardFunction Array text Map String RegExp
 
 syn keyword custardBoolean true false
 syn keyword custardNull none
