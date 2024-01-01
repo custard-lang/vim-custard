@@ -11,7 +11,7 @@ syn match custardError ,[]})],
 syn keyword custardSyntax import importAnyOf export
 syn keyword custardSyntax const let assign
 
-syn keyword custardSyntax if else when scope fn procedure generatorFn
+syn keyword custardSyntax if else when scope fn procedure generatorFn any
 syn keyword custardSyntax return
 syn keyword custardSyntax while for forEach recursive
 syn keyword custardSyntax break continue yield
