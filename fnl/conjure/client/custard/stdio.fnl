@@ -1,17 +1,16 @@
-(module conjure.client.custard.stdio
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             config conjure.config
-             text conjure.text
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local log (autoload :conjure.log))
+(local mapping (autoload :conjure.mapping))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local stdio (autoload :conjure.remote.stdio))
+(local str (autoload :conjure.nfnl.string))
+(local text (autoload :conjure.text))
+(local ts (autoload :conjure.tree-sitter))
 
-(define :conjure.client.custard.stdio)
+(local M (define :conjure.client.custard.stdio))
 
 (config.merge
   {:client
@@ -32,29 +31,29 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :custard :stdio]))
+(local cfg (config.get-in-fn [:client :custard :stdio]))
 
-(defonce- state (client.new-state (fn [] {:repl nil})))
+(local state (client.new-state (fn [] {:repl nil})))
 
-(def buf-suffix ".cstd")
+(set M.buf-suffix ".cstd")
 
-(def comment-prefix "")
+(set M.comment-prefix "")
 
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
       (log.append [(.. comment-prefix "No REPL running")]))))
 
-(defn- format-message [msg]
+(fn format-message [msg]
   (str.split (or msg.out msg.err) "\n"))
 
-(defn- display-result [msg]
+(fn display-result [msg]
   (log.append
     (->> (format-message msg)
          (a.filter #(not (= "" $1))))))
 
-(defn eval-str [opts]
+(fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -68,24 +67,24 @@
           (a.run! display-result msgs))
         {:batch? true}))))
 
-(defn doc-str [opts]
+(fn M.doc-str [opts]
   (eval-str (a.update opts :code #(.. ",doc " $1))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
         [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(defn stop []
+(fn M.stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn enter []
+(fn M.enter []
   (let [repl (state :repl)
         path (nvim.fn.expand "%:p")]
     (when (and repl (not (log.log-buf? path)))
@@ -93,7 +92,7 @@
         (prep-code (.. ":load " path))
         (fn [])))))
 
-(defn start []
+(fn M.start []
   (if (state :repl)
     (log.append ["; Can't start, REPL is already running."
                  (.. "; Stop the REPL with "
@@ -127,10 +126,10 @@
          (fn [msg]
            (display-result msg))}))))
 
-(defn on-load []
+(fn M.on-load []
   (start))
 
-(defn on-filetype []
+(fn M.on-filetype []
   (augroup
     conjure-racket-stdio-bufenter
     (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
@@ -150,5 +149,7 @@
     interrupt
     {:desc "Interrupt the current evaluation"}))
 
-(defn on-exit []
+(fn M.on-exit []
   (stop))
+
+M
