@@ -4,7 +4,7 @@ default: deps compile test
 
 deps:
 	scripts/dep.sh Olical aniseed origin/master
-	scripts/dep.sh Olical conjure origin/master
+	scripts/dep.sh Olical conjure origin/main
 
 compile:
 	rm -rf lua
