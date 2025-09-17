@@ -43,7 +43,7 @@
   (let [repl (state :repl)]
     (if repl
       (f repl)
-      (log.append [(.. comment-prefix "No REPL running")]))))
+      (log.append [(.. M.comment-prefix "No REPL running")]))))
 
 (fn format-message [msg]
   (str.split (or msg.out msg.err) "\n"))
@@ -57,24 +57,30 @@
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        (prep-code opts.code)
+        opts.code
         (fn [msgs]
           (when (and (= 1 (a.count msgs))
                      (= "" (a.get-in msgs [1 :out])))
-            (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result.")))
+            (a.assoc-in msgs [1 :out] (.. M.comment-prefix "Empty result.")))
 
           (opts.on-result (str.join "\n" (a.mapcat format-message msgs)))
           (a.run! display-result msgs))
         {:batch? true}))))
 
+(fn M.interrupt []
+  (with-repl-or-warn
+    (fn [repl]
+      (log.append [(.. M.comment-prefix " Sending interrupt signal.")] {:break? true})
+      (repl.send-signal :sigint))))
+
 (fn M.doc-str [opts]
-  (eval-str (a.update opts :code #(.. ",doc " $1))))
+  (M.eval-str (a.update opts :code #(.. ",doc " $1))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
+        [(.. M.comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
 (fn M.stop []
@@ -89,7 +95,7 @@
         path (nvim.fn.expand "%:p")]
     (when (and repl (not (log.log-buf? path)))
       (repl.send
-        (prep-code (.. ":load " path))
+        (.. ":load " path)
         (fn [])))))
 
 (fn M.start []
@@ -117,9 +123,9 @@
          :on-exit
          (fn [code signal]
            (when (and (= :number (type code)) (> code 0))
-             (log.append [(.. comment-prefix "process exited with code " code)]))
+             (log.append [(.. M.comment-prefix "process exited with code " code)]))
            (when (and (= :number (type signal)) (> signal 0))
-             (log.append [(.. comment-prefix "process exited with signal " signal)]))
+             (log.append [(.. M.comment-prefix "process exited with signal " signal)]))
            (stop))
 
          :on-stray-output
@@ -130,23 +136,19 @@
   (start))
 
 (fn M.on-filetype []
-  (augroup
-    conjure-racket-stdio-bufenter
-    (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
-
   (mapping.buf
     :CustardStart (cfg [:mapping :start])
-    start
+    M.start
     {:desc "Start the REPL"})
 
   (mapping.buf
     :CustardStop (cfg [:mapping :stop])
-    stop
+    M.stop
     {:desc "Stop the REPL"})
 
   (mapping.buf
     :CustardInterrupt (cfg [:mapping :interrupt])
-    interrupt
+    M.interrupt
     {:desc "Interrupt the current evaluation"}))
 
 (fn M.on-exit []
