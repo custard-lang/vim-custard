@@ -114,7 +114,7 @@
          :on-success
          (fn []
            (display-repl-status :started)
-           (enter))
+           (M.enter))
 
          :on-error
          (fn [err]
@@ -133,7 +133,7 @@
            (display-result msg))}))))
 
 (fn M.on-load []
-  (start))
+  (M.start))
 
 (fn M.on-filetype []
   (mapping.buf

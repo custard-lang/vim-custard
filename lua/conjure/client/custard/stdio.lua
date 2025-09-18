@@ -105,7 +105,7 @@ M.start = function()
   else
     local function _15_()
       display_repl_status("started")
-      return enter()
+      return M.enter()
     end
     local function _16_(err)
       return display_repl_status(err)
@@ -128,7 +128,7 @@ M.start = function()
   end
 end
 M["on-load"] = function()
-  return start()
+  return M.start()
 end
 M["on-filetype"] = function()
   mapping.buf("CustardStart", cfg({"mapping", "start"}), M.start, {desc = "Start the REPL"})
